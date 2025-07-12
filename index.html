@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Universal Video Downloader</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 60px; background-color: #f0f2f5; }
+    input, button { padding: 10px; width: 80%; max-width: 500px; margin: 10px 0; }
+    #status { margin-top: 20px; color: green; }
+    a { color: blue; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Download Videos from YouTube, Instagram & Facebook</h1>
+  <input id="urlInput" placeholder="Paste video URL here" />
+  <br />
+  <button onclick="download()">Download</button>
+  <div id="status"></div>
+
+  <script>
+    async function download() {
+      const url = document.getElementById("urlInput").value;
+      const status = document.getElementById("status");
+      status.innerText = "Processing...";
+
+      try {
+        const res = await fetch("http://localhost:3000/api/download", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+        if (data.success && data.downloadUrl) {
+          status.innerHTML = `✅ Ready: <a href="\${data.downloadUrl}" target="_blank">Click to download</a>`;
+        } else {
+          status.innerText = "❌ Failed to get video.";
+        }
+      } catch (err) {
+        status.innerText = "❌ Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
